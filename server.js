@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
 require('dotenv').config()
-const { auth } = require('express-openid-connect');
+const { auth, requiresAuth } = require('express-openid-connect');
 
 const port = process.env.PORT || 3000;
 const gitbookSignKey =  process.env.GITBOOK_SIGN_KEY;
@@ -23,10 +23,8 @@ app.use(auth(config));
 
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
-    res.send(req.oidc.isAuthenticated() ? redirect('/auth/confirm') : 'Logged out')
+    res.send(req.oidc.isAuthenticated() ? res.redirect('/auth/confirm') : 'Logged out')
 });
-
-
 
 
 app.listen(port, () => {
@@ -38,7 +36,7 @@ app.listen(port, () => {
 // 
 // ==> This endpoint is the fallback URL to configure on GitBook side.
 //    GitBook will redirect the visitor to this url when authentication is needed.
-app.get('/auth/confirm', (req, res) => {
+app.get('/auth/confirm', requiresAuth(), (req, res) => {
     const token = jwt.sign({}, gitbookSignKey, { expiresIn: '1h' });
 
     const uri = new URL(`${gitbookSpaceURL}${req.query.location || ''}`);
