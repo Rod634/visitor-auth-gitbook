@@ -23,7 +23,7 @@ app.use(auth(config));
 
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
-    res.send(req.oidc.isAuthenticated() ? res.redirect('/auth/confirm') : 'Logged out')
+    res.send(req.oidc.isAuthenticated() ? res.redirect('/auth/confirm') : res.redirect('/login'))
 });
 
 
