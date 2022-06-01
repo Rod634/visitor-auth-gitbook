@@ -5,8 +5,6 @@ require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
 
 const port = process.env.PORT || 3000;
-const gitbookSignKey =  process.env.GITBOOK_SIGN_KEY;
-const gitbookSpaceURL = process.env.GITBOOK_URL;
 
 const config = {
     authRequired: false,
@@ -20,10 +18,9 @@ const config = {
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
 
-
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
-    res.send(req.oidc.isAuthenticated() ? res.redirect('/auth/confirm') : res.redirect('/login'))
+    res.send(req.oidc.isAuthenticated() ? res.redirect('/welcome') : res.redirect('/login'))
 });
 
 
@@ -31,16 +28,19 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
 
-// Redirect to the documentation with the JWT token signed when auth has been "completed".
-// The user session on your application should be checked here to validate that the user can access the documentation.
-// 
-// ==> This endpoint is the fallback URL to configure on GitBook side.
-//    GitBook will redirect the visitor to this url when authentication is needed.
-app.get('/auth/confirm', requiresAuth(), (req, res) => {
-    const token = jwt.sign({}, gitbookSignKey, { expiresIn: '1h' });
+app.get('/welcome', requiresAuth(), (req, res) => {
+    res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
+})
 
-    const uri = new URL(`${gitbookSpaceURL}${req.query.location || ''}`);
-    uri.searchParams.set('jwt_token', token)
+app.get('/teste', requiresAuth(), (req, res) => {
+    res.send("teste");
+})
 
-    res.redirect(uri.toString());
-});
+function mountJwtToken(key, space, location){
+    const token = jwt.sign({}, key, { expiresIn: '1h' });
+
+    const uri = new URL(`${space}${location || ''}`);
+    uri.searchParams.set('jwt_token', token);
+
+    return uri.toString();
+}
