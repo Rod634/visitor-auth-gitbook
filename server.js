@@ -31,7 +31,6 @@ app.listen(port, () => {
 app.get('/welcome', requiresAuth(), claimCheck((claims) => {
     return claims.roles.includes('fx-branca');
   }, `Unexpected 'isAdmin' and 'roles' claims`), (req, res) => {
-    console.log(req.oidc.user.sub)
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
