@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
 require('dotenv').config()
-const { auth, requiresAuth } = require('express-openid-connect');
+const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
 
 const port = process.env.PORT || 3000;
 
@@ -28,7 +28,10 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
 
-app.get('/welcome', requiresAuth(), (req, res) => {
+app.get('/welcome', requiresAuth(), claimCheck((req, claims) => {
+    return claims.roles.includes('fx-branca');
+}), (req, res) => {
+    console.log(req.oidc.user.sub)
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
