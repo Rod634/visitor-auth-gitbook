@@ -1,26 +1,11 @@
 const express = require('express');
-const jwtWeb = require('jsonwebtoken');
 const app = express();
-const { expressjwt: jwt } = require("express-jwt");
-const jwks = require('jwks-rsa');
+var axios = require("axios").default;
 
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
 
 const port = process.env.PORT || 3000;
-
-
-const jwtCheck = jwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: 'https://dev-3f6nd7py.us.auth0.com/.well-known/jwks.json'
-  }),
-  audience: 'https://teste.com',
-  issuer: 'https://dev-3f6nd7py.us.auth0.com/',
-  algorithms: ['RS256']
-});
 
 const config = {
     authRequired: false,
@@ -33,7 +18,6 @@ const config = {
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
-app.use(jwtCheck);
 
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
@@ -45,8 +29,8 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
 
-app.get('/welcome', jwtCheck, (req, res) => {
-    req.headers['Authorization'] = 'someValue'
+app.get('/welcome', requiresAuth(), (req, res) => {
+    getAccessToken();
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
@@ -61,4 +45,24 @@ function mountJwtToken(key, space, location){
     uri.searchParams.set('jwt_token', token);
 
     return uri.toString();
+}
+
+function getAccessToken(){
+    var options = {
+        method: 'POST',
+        url: 'https://dev-3f6nd7py.us.auth0.com/oauth/token',
+        headers: {'content-type': 'application/x-www-form-urlencoded'},
+        data: new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: config.clientID,
+          client_secret: config.secret,
+          audience: 'https://teste.com'
+        })
+      };
+      
+      axios.request(options).then(function (response) {
+        console.log(response.data);
+      }).catch(function (error) {
+        console.error(error);
+      });
 }
