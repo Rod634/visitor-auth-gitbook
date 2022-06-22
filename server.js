@@ -21,6 +21,7 @@ app.use(auth(config));
 
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
+    getAccessToken();
     res.send(req.oidc.isAuthenticated() ? res.redirect('/welcome') : res.redirect('/login'))
 });
 
