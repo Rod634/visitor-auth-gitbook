@@ -28,9 +28,9 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
 
-app.get('/welcome', requiresAuth(), claimCheck((req, claims) => {
-    return claims.roles.includes('fx-branca');
-}), (req, res) => {
+app.get('/welcome', requiresAuth(), claimCheck((claims) => {
+    return claims.isAdmin && claims.roles.includes('fx-branca');
+  }, `Unexpected 'isAdmin' and 'roles' claims`), (req, res) => {
     console.log(req.oidc.user.sub)
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
