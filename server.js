@@ -1,10 +1,26 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const jwtWeb = require('jsonwebtoken');
 const app = express();
+const { expressjwt: jwt } = require("express-jwt");
+const jwks = require('jwks-rsa');
+
 require('dotenv').config()
-const { auth, requiresAuth, claimCheck } = require('express-openid-connect');
+const { auth, requiresAuth } = require('express-openid-connect');
 
 const port = process.env.PORT || 3000;
+
+
+const jwtCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: 'https://dev-3f6nd7py.us.auth0.com/.well-known/jwks.json'
+  }),
+  audience: 'https://teste.com',
+  issuer: 'https://dev-3f6nd7py.us.auth0.com/',
+  algorithms: ['RS256']
+});
 
 const config = {
     authRequired: false,
@@ -17,6 +33,7 @@ const config = {
 
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
+app.use(jwtCheck);
 
 // Welcome page to simulate your application.
 app.get('/', (req, res) => {
@@ -28,9 +45,7 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 });
 
-app.get('/welcome', requiresAuth(), claimCheck((claims) => {
-    return claims.roles.includes('fx-branca');
-  }, `Unexpected 'isAdmin' and 'roles' claims`), (req, res) => {
+app.get('/welcome', jwtCheck, (req, res) => {
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
@@ -39,7 +54,7 @@ app.get('/teste', requiresAuth(), (req, res) => {
 })
 
 function mountJwtToken(key, space, location){
-    const token = jwt.sign({}, key, { expiresIn: '1h' });
+    const token = jwtWeb.sign({}, key, { expiresIn: '1h' });
 
     const uri = new URL(`${space}${location || ''}`);
     uri.searchParams.set('jwt_token', token);
