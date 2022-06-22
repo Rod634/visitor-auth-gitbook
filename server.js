@@ -46,6 +46,7 @@ app.listen(port, () => {
 });
 
 app.get('/welcome', jwtCheck, (req, res) => {
+    req.headers['Authorization'] = 'someValue'
     res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
