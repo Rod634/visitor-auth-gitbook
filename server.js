@@ -44,6 +44,7 @@ function mountJwtToken(key, space, location) {
     clientId: config.clientID,
   });
 
+  console.log("teste");
   console.log(auth0);
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
