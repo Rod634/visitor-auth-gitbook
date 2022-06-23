@@ -41,7 +41,7 @@ app.get('/teste', requiresAuth(), (req, res) => {
 function mountJwtToken(key, space, location) {
 
   var auth0 = new ManagementClient({
-    domain: 'https://dev-3f6nd7py.us.auth0.com',
+    domain: 'https://dev-3f6nd7py.us.auth0.com/',
     clientId: config.clientID,
     clientSecret: config.secret,
     scope: 'read:users update:users, read:roles',
