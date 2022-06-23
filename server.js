@@ -43,10 +43,14 @@ function mountJwtToken(key, space, location) {
     domain: 'https://dev-3f6nd7py.us.auth0.com',
     clientId: config.clientID,
     clientSecret: config.secret,
+    tokenProvider: {
+      enableCache: true,
+      cacheTTLInSeconds: 10
+    }
   });
 
-  console.log("teste");
-  console.log(auth0);
+  // console.log("teste");
+  // console.log(auth0);
 
   var params = {
     per_page: 10,
@@ -54,6 +58,7 @@ function mountJwtToken(key, space, location) {
   };
 
   auth0.getRoles(params, function(err, roles) {
+    console.log(err);
     console.log(roles.length);
   });
 
