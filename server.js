@@ -45,22 +45,12 @@ function mountJwtToken(key, space, location) {
     clientSecret: config.secret,
   });
 
-  auth0.getRoles()
-    .then(roles=> {
-      console.log("roles");
-      console.log(roles);
-    })
-    .then(json=> {
-      console.log("json");
-      console.log(json);
-    })
-    .catch(data => {
-      console.log("faill");
-      console.log(data);
-    });
-
   console.log("teste");
-  console.log();
+  console.log(auth0);
+
+  var roles = auth0.getRoles();
+
+  console.log(roles);
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
