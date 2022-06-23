@@ -1,9 +1,9 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
-var AuthenticationClient = require('auth0').AuthenticationClient;
-
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
+const AuthenticationClient = require('auth0').AuthenticationClient;
 
 const port = process.env.PORT || 3000;
 
@@ -46,7 +46,7 @@ function mountJwtToken(key, space, location) {
 
   console.log(auth0);
 
-  const token = jwtWeb.sign({}, key, { expiresIn: '1h' });
+  const token = jwt.sign({}, key, { expiresIn: '1h' });
 
   const uri = new URL(`${space}${location || ''}`);
   uri.searchParams.set('jwt_token', token);
