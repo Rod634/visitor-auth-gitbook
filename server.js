@@ -48,22 +48,14 @@ function mountJwtToken(key, space, location) {
   console.log("teste");
   console.log(auth0);
 
-  auth0.getRoles(function(err, roles){
-    if(err){
-      console.log(err);
-    }
-    console.log("callback");
-    console.log(roles);
-  })
+  var params = {
+    per_page: 10,
+    page: 0
+  };
 
-  auth0.getRoles()
-    .then(function(roles) {
-      console.log("promisse")
-      console.log(roles)
-    })
-  .catch(function(err){
-    console.log(err);
-  })
+  auth0.getRoles(params, function(err, roles) {
+    console.log(roles.length);
+  });
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
