@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
-const AuthenticationClient = require('auth0').AuthenticationClient;
+var ManagementClient = require('auth0').ManagementClient;
 
 const port = process.env.PORT || 3000;
 
@@ -39,13 +39,14 @@ app.get('/teste', requiresAuth(), (req, res) => {
 
 function mountJwtToken(key, space, location) {
 
-  var auth0 = new AuthenticationClient({
+  var auth0 = new ManagementClient({
     domain: 'https://dev-3f6nd7py.us.auth0.com',
     clientId: config.clientID,
+    clientSecret: config.secret,
   });
 
   console.log("teste");
-  console.log(auth0.getClientInfo());
+  console.log(auth0);
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
