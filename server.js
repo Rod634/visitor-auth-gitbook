@@ -4,6 +4,7 @@ const app = express();
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
 const AuthenticationClient = require('auth0').AuthenticationClient;
+const axios = require("axios").default
 
 const port = process.env.PORT || 3000;
 
@@ -39,13 +40,32 @@ app.get('/teste', requiresAuth(), (req, res) => {
 
 function mountJwtToken(key, space, location) {
 
-  var auth0 = new AuthenticationClient({
-    domain: 'https://dev-3f6nd7py.us.auth0.com',
-    clientId: config.clientID,
+  // var auth0 = new AuthenticationClient({
+  //   domain: 'https://dev-3f6nd7py.us.auth0.com',
+  //   clientId: config.clientID,
+  // });
+
+  // console.log("teste");
+  // console.log(auth0);
+
+  var options = {
+    method: 'POST',
+    url: 'https://dev-3f6nd7py.us.auth0.com/oauth/token',
+    headers: {'content-type': 'application/x-www-form-urlencoded'},
+    data: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: config.clientID,
+      client_secret: config.client_secret,
+      audience: 'https://teste.com'
+    })
+  };
+  
+  axios.request(options).then(function (response) {
+    console.log(response.data);
+  }).catch(function (error) {
+    console.error(error);
   });
 
-  console.log("teste");
-  console.log(auth0);
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
