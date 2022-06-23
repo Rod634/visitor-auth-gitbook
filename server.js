@@ -55,7 +55,7 @@ function mountJwtToken(key, space, location) {
     data: new URLSearchParams({
       grant_type: 'client_credentials',
       client_id: config.clientID,
-      client_secret: config.client_secret,
+      client_secret: config.secret,
       audience: 'https://teste.com'
     })
   };
