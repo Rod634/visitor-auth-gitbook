@@ -31,7 +31,8 @@ app.listen(port, () => {
 });
 
 app.get('/welcome', requiresAuth(), (req, res) => {
-  res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
+  res.send(JSON.stringify(req.user))
+  //res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
 app.get('/teste', requiresAuth(), (req, res) => {
@@ -40,13 +41,13 @@ app.get('/teste', requiresAuth(), (req, res) => {
 
 function mountJwtToken(key, space, location) {
 
-  // var auth0 = new AuthenticationClient({
-  //   domain: 'https://dev-3f6nd7py.us.auth0.com',
-  //   clientId: config.clientID,
-  // });
+  var auth0 = new AuthenticationClient({
+    domain: 'https://dev-3f6nd7py.us.auth0.com',
+    clientId: config.clientID,
+  });
 
-  // console.log("teste");
-  // console.log(auth0);
+  console.log("teste");
+  console.log(auth0);
 
   var options = {
     method: 'POST',
