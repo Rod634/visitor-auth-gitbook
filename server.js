@@ -35,7 +35,7 @@ app.get('/welcome', requiresAuth(), (req, res) => {
 })
 
 app.get('/teste', requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
+  res.send(JSON.stringify(req.oidc.accessToken));
 })
 
 function mountJwtToken(key, space, location) {
