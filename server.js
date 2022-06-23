@@ -31,8 +31,7 @@ app.listen(port, () => {
 });
 
 app.get('/welcome', requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.user))
-  //res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
+  res.redirect(mountJwtToken(process.env.GITBOOK_SIGN_KEY, process.env.GITBOOK_URL, req.query.location));
 })
 
 app.get('/teste', requiresAuth(), (req, res) => {
