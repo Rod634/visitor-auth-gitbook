@@ -40,46 +40,25 @@ app.get('/teste', requiresAuth(), (req, res) => {
 
 function mountJwtToken(key, space, location) {
 
-  // var auth0 = new ManagementClient({
-  //   domain: 'https://dev-3f6nd7py.us.auth0.com',
-  //   clientId: config.clientID,
-  //   clientSecret: config.secret,
-  //   tokenProvider: {
-  //     enableCache: true,
-  //     cacheTTLInSeconds: 10
-  //   }
-  // });
-
-  // // console.log("teste");
-  // // console.log(auth0);
-
-  // var params = {
-  //   per_page: 10,
-  //   page: 0
-  // };
-
-  // auth0.getRoles(params, function(err, roles) {
-  //   console.log(err);
-  //   console.log(roles.length);
-  // });
-
-  var auth0 = new AuthenticationClient({
+  var auth0 = new ManagementClient({
     domain: 'https://dev-3f6nd7py.us.auth0.com',
     clientId: config.clientID,
     clientSecret: config.secret,
+    scope: 'read:users update:users, read:roles',
   });
-  
-  auth0.clientCredentialsGrant(
-    {
-      audience: 'https://dev-3f6nd7py.us.auth0.com/api/v2/',
-    },
-    function (err, response) {
-      if (err) {
-        // Handle error.
-      }
-      console.log(response.access_token);
+
+  // console.log("teste");
+  // console.log(auth0);
+
+  var params = { id: 'auth0|62965042e0b00b0069f8fc20', page: 0, per_page: 50, sort: 'date:-1', include_totals: true };
+
+  auth0.getUserRoles(params, function(err, roles) {
+    if(err){
+      console.log('erro:', err);
     }
-  );
+    console.log(roles.length);
+  });
+
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
