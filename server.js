@@ -4,6 +4,8 @@ const app = express();
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
 const ManagementClient = require('auth0').ManagementClient;
+const axios = require('axios');
+
 
 const port = process.env.PORT || 3000;
 
@@ -39,25 +41,26 @@ app.get('/teste', requiresAuth(), (req, res) => {
 
 function mountJwtToken(key, space, location) {
 
-  var auth0 = new ManagementClient({
-    domain: 'https://dev-3f6nd7py.us.auth0.com',
-    clientId: config.clientID,
-    clientSecret: config.secret,
-    scope: 'read:users update:users, read:roles, read:role_members',
-  });
+  // var auth0 = new ManagementClient({
+  //   domain: 'https://dev-3f6nd7py.us.auth0.com',
+  //   clientId: config.clientID,
+  //   clientSecret: config.secret,
+  //   scope: 'read:users update:users, read:roles, read:role_members',
+  // });
 
-  // console.log("teste");
-  // console.log(auth0);
+  // // console.log("teste");
+  // // console.log(auth0);
 
-  var params = { id: 'auth0|62965042e0b00b0069f8fc20', page: 0, per_page: 50, sort: 'date:-1', include_totals: true };
+  // var params = { id: 'auth0|62965042e0b00b0069f8fc20', page: 0, per_page: 50, sort: 'date:-1', include_totals: true };
 
-  auth0.getUserRoles(params, function(err, roles) {
-    if(err){
-      console.log('erro:', err);
-    }
-    console.log(roles.length);
-  });
-
+  // auth0.getUserRoles(params, function(err, roles) {
+  //   if(err){
+  //     console.log('erro:', err);
+  //   }
+  //   console.log(roles.length);
+  // });
+  
+  console.log(getAccessToken())
 
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
@@ -65,4 +68,27 @@ function mountJwtToken(key, space, location) {
   uri.searchParams.set('jwt_token', token);
 
   return uri.toString();
+}
+
+function getAccessToken(){
+  const getToken = async () => {
+    const options = {
+      method: 'POST',
+      url: 'https://dev-3f6nd7py.us.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      data: {
+        client_id: config.clientID,
+        client_secret: config.secret,
+        audience: 'https://dev-3f6nd7py.us.auth0.com/api/v2/',
+        grant_type: 'client_credentials',
+      },
+    };
+    try {
+      const res = await axios(options);
+      console.log('Token Request: ',res.status)
+      return res.data.access_token;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
