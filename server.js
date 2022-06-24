@@ -60,8 +60,6 @@ function mountJwtToken(key, space, location) {
 
   });
   
-  console.log(getAccessToken())
-
   const token = jwt.sign({}, key, { expiresIn: '1h' });
 
   const uri = new URL(`${space}${location || ''}`);
