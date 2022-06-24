@@ -4,7 +4,6 @@ const app = express();
 require('dotenv').config()
 const { auth, requiresAuth } = require('express-openid-connect');
 const ManagementClient = require('auth0').ManagementClient;
-const AuthenticationClient = require('auth0').AuthenticationClient;
 
 const port = process.env.PORT || 3000;
 
@@ -41,10 +40,10 @@ app.get('/teste', requiresAuth(), (req, res) => {
 function mountJwtToken(key, space, location) {
 
   var auth0 = new ManagementClient({
-    domain: 'https://dev-3f6nd7py.us.auth0.com/api/v2',
+    domain: 'https://dev-3f6nd7py.us.auth0.com',
     clientId: config.clientID,
     clientSecret: config.secret,
-    scope: 'read:users update:users, read:roles',
+    scope: 'read:users update:users, read:roles, read:role_members',
   });
 
   // console.log("teste");
